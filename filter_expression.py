@@ -4,17 +4,18 @@ version:
 Author: zpliu
 Date: 2023-04-19 21:57:09
 LastEditors: zpliu
-LastEditTime: 2023-04-19 21:58:36
+LastEditTime: 2023-04-19 22:52:17
 @param: 
 '''
 import pandas as pd 
+import sys 
 #----------------------------------------------------------------------
 #? 基因表达量文件跑peer时，不需要header与index
 #* 对基因表达量进行进一步过滤
 #? 表达量大于0.1 的样本占比超过5% 
 #? 存在两倍表达差异
 #----------------------------------------------------------------------
-geneExpression=pd.read_csv("FPKM/gene_expression.txt",header=0,index_col=0,sep="\t")
+geneExpression=pd.read_csv(sys.argv[1],header=0,index_col=0,sep="\t")
 geneExpression=geneExpression.T
 lowIndex=int(geneExpression.shape[0]*0.05)
 highIndex=int(geneExpression.shape[0]*0.95)
@@ -28,5 +29,5 @@ for gene,ratio in geneExpression.apply(lambda x: len([i for i in x if i>0.1])/ge
                 fiterGenePair.append(gene) 
 
 fiter_expression=geneExpression[fiterGenePair]
-fiter_expression.to_csv("./peer/filter_gene_expression.txt",header=False,index=False,sep=",")
-pd.Series(fiterGenePair).to_csv("peer/filter_genePair.txt",header=False,index=False,sep="\t")
+fiter_expression.to_csv(sys.argv[2],header=False,index=False,sep=",")
+pd.Series(fiterGenePair).to_csv(sys.argv[3],header=False,index=False,sep="\t")

@@ -4,21 +4,24 @@
  * @Author: zpliu
  * @Date: 2023-04-19 21:56:07
  * @LastEditors: zpliu
- * @LastEditTime: 2023-04-19 22:48:18
+ * @LastEditTime: 2023-04-19 22:53:45
  * @@param: 
 -->
 
 
-### 原始FPKM文件处理
+### 1.原始FPKM文件处理
 
 + 单个基因表达量大于0.1的accessions 超过5%
 + 单个基因第95%表达水平和5%表达水平相差两倍
 
+> `./FPKM/gene_expression.txt` 为初始的基因表达矩阵，`./peer/filter_gene_expression.txt` 按照表达量过滤后的表达矩阵，
+> `./peer/filter_genePair.txt` 过滤后剩下的基因ID
+
 ```bash
-python filter_expression.py
+python filter_expression.py  ./FPKM/gene_expression.txt ./peer/filter_gene_expression.txt ./peer/filter_genePair.txt
 ```
 
-### peer计算协变量
+### 2.peer计算协变量
 
 > 例如按照5个协变量因子进行分析
 
@@ -27,7 +30,7 @@ module load peer/1.0
 python2.7 peer_interface.py -f peer/filter_gene_expression.txt -n 5 -o peer_factor_5
 ```
 
-#### 将peer生成的文件进行标准化
+#### 2.1 将peer生成的文件进行标准化
 
 > 注意这里需要使用python3 版本，在module load peer时会自动加载python2，因此需要module unload Python/2.7.15
 > 输出文件为 `./phenotype/gene_expression.txt` 即标准化后的表型文件
@@ -38,7 +41,7 @@ mkdir phenotype
 python  peer_RINT.py  ./peer_factor_5/residuals.csv ./peer/filter_genePair.txt ./FPKM/gene_expression.txt ./phenotype/gene_expression.txt
 ```
 
-### 根据基因的注释信息向表型文件中添加注释信息
+#### 2.2 根据基因的注释信息向表型文件中添加注释信息
 
 > 由于cis-eQTL分析是基因上下游1Mb的变异进行eQTL分析，因此需要在表型文件中指定基因的TSS信息
 > 默认跳过scaffold上的基因，不分析; `./phenotype/gene_expression_peer_5.bed` 文件为过滤后的基因，且包含TSS坐标的信息
@@ -53,7 +56,7 @@ bgzip  gene_expression_peer_5.bed
 tabix  -p bed  gene_expression_peer_5.bed.gz
 ```
 
-### 进行cis-eQTL分析
+### 3.进行cis-eQTL分析
 
 cis eQTL分析中的两种模式：
 + `permutation`找出每个基因最显著的lead SNP
