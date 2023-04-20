@@ -69,16 +69,16 @@ if __name__=="__main__":
     geneDataFrame=sys.argv[3]
     outFile=sys.argv[4]
 
-    resideals_data=pd.read_csv("./peer_factor_5/residuals.csv",header=None,index_col=None,sep=",")
+    resideals_data=pd.read_csv(residealsFile,header=None,index_col=None,sep=",")
     resideals_data_normal=resideals_data.apply(
         lambda x:rank_INT(x),axis=0
     )
-    geneId=pd.read_csv("./peer/filter_genePair.txt",header=None,index_col=None,sep="\t")
-    SampleList=pd.read_csv("FPKM/gene_expression.txt",header=0,index_col=0,sep="\t")
+    geneId=pd.read_csv(geneNameFile,header=None,index_col=None,sep="\t")
+    SampleList=pd.read_csv(geneDataFrame,header=0,index_col=0,sep="\t")
 
     resideals_data_normal.index=SampleList.columns
     resideals_data_normal.columns=geneId[0].values
     resideals_data_normal.index.name='IID'
     resideals_data_normal.to_csv(
-        "./phenotype/gene_expression.txt",
+        outFile,
         header=True,index=True,sep="\t")
