@@ -4,7 +4,7 @@
  * @Author: zpliu
  * @Date: 2023-04-19 21:56:07
  * @LastEditors: zpliu
- * @LastEditTime: 2023-04-19 22:53:45
+ * @LastEditTime: 2023-04-24 11:31:01
  * @@param: 
 -->
 
@@ -61,6 +61,7 @@ tabix  -p bed  gene_expression_peer_5.bed.gz
 cis eQTL分析中的两种模式：
 + `permutation`找出每个基因最显著的lead SNP
 + `nominal` 对于每个基因，输出其cis区域所有SNP的beta与se值（包括lead SNPs）
++ `PCA_qcovar.txt` 文件中是3个PCA成分，如果有多个成分，需要修改脚本
 
 >这里脚本使用GPU进行跑会快很多，没有GPU权限可以跟管理员申请 ;
 > 由于表型文件是矫正peer协变量后剩余的值，因此跑eQTL分析时，只用PAC的协变量即可
@@ -81,7 +82,20 @@ perfix='Garb_01G000010'
 python cis_mapping.py  ${plinkFile} ${phenotype} ${covariant} ${perfix} n 
 #* nominal结果 
 
-
-
 ```
+
+#### 3.1将nominal输出的`parquet` 文件转为txt文件
+
+```bash
+python read_parquet.py input.parquet out.txt
+```
+
+### 绘图
++ 曼哈顿图
++ QQ-plot图
+
+> 相应的脚本在`plotData.ipynb`中
+
+![曼哈顿图实例](./Rectangular-Manhattan.pval.jpg)
+
 
