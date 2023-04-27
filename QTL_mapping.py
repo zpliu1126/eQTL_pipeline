@@ -4,7 +4,7 @@ version:
 Author: zpliu
 Date: 2022-12-05 21:29:41
 LastEditors: zpliu
-LastEditTime: 2023-04-19 22:46:43
+LastEditTime: 2023-04-27 22:57:56
 @param: 
 '''
 import pandas as pd
@@ -58,16 +58,31 @@ if mode == 'p':
                          )
     cis_df.to_csv(OutFile, header=True, index=True, sep="\t")
 elif mode == 'n':
+    geneList=pd.read_csv(sys.argv[6],header=None,index_col=None,sep="\t")
+    try:
+        filter_phenotype=phenotype_df.loc[geneList[0].values]
+        filter_pos=phenotype_pos_df.loc[geneList[0].values]
+    except KeyError:
+        print("gene ID not in the phenotype!!")
     cis.map_nominal(genotype_df, variant_df,
-                             phenotype_df,
-                             phenotype_pos_df,
+                             filter_phenotype,
+                             filter_pos,
                              prefix=OutFile,
                              covariates_df=covariates_df,
                              maf_threshold=0.05,
                              window=1000000,
                              output_dir='.',
                              write_top=True, write_stats=True)
-else:
-    pass 
+elif mode=='t':
+    #! 保留所有位点的beta与se值
+    geneList=pd.read_csv(sys.argv[6],header=None,index_col=None,sep="\t")
+    try:
+        filter_phenotype=phenotype_df.loc[geneList[0].values]
+    except KeyError:
+        print("gene ID not in the phenotype!!")
+    trans_df = trans.map_trans(genotype_df, filter_phenotype, covariates_df,
+                            return_sparse=True, pval_threshold=1, maf_threshold=0.05,
+                            batch_size=20000)
+    trans_df.to_csv(OutFile,header=True,index=False)
 
 

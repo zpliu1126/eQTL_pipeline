@@ -4,7 +4,7 @@
  * @Author: zpliu
  * @Date: 2023-04-19 21:56:07
  * @LastEditors: zpliu
- * @LastEditTime: 2023-04-24 11:31:01
+ * @LastEditTime: 2023-04-27 22:59:33
  * @@param: 
 -->
 
@@ -75,11 +75,12 @@ phenotype='./phenotype/gene_expression_peer_5.bed.gz'
 covariant='./PCA_qcovar.txt'
 #* permutate 结果
 outFile='All_eGene_permutate.txt'
-python cis_mapping.py  ${plinkFile} ${phenotype} ${covariant} ${outFile} p
+python QTL_mapping.py  ${plinkFile} ${phenotype} ${covariant} ${outFile} p
 
 #* nominal 结果将针对单个基因进行分析，并输出压缩的parquet文件
-perfix='Garb_01G000010'
-python cis_mapping.py  ${plinkFile} ${phenotype} ${covariant} ${perfix} n 
+perfix='nominalOut'
+geneListFile='nominalTest.gene.list'
+python QTL_mapping.py  ${plinkFile} ${phenotype} ${covariant} ${perfix} n ${geneListFile}
 #* nominal结果 
 
 ```
@@ -87,10 +88,20 @@ python cis_mapping.py  ${plinkFile} ${phenotype} ${covariant} ${perfix} n
 #### 3.1将nominal输出的`parquet` 文件转为txt文件
 
 ```bash
-python read_parquet.py input.parquet out.txt
+python read_parquet.py nominalOut.cis_qtl_pairs.1.parquet eGene.cis.nominal.txt
 ```
 
-### 绘图
+### 4.进行trans-eQTL分析
+
+针对特定基因进行全基因组的trans-eQTL分析
+```bash
+geneListFile='nominalTest.gene.list'
+outFile='filter_gene_trans.txt'
+python QTL_mapping.py  ${plinkFile} ${phenotype} ${covariant} ${outFile} t ${geneListFile}
+```
+
+
+### 5.绘图
 + 曼哈顿图
 + QQ-plot图
 
